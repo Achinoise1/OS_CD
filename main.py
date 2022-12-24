@@ -2,49 +2,36 @@ import getpass
 import os
 import keyboard
 
-class MyFile():
+class User():
     def __init__(self):
-        self.fileName = ""
-        self.fileSize = 0
-        self.content = ""
-        self.fileType = ""
+        self.userName="root"
+        self.pw="123456"
+        self.permission=7
     
-    def setFileName(self,fileName):
-        self.fileName = fileName
+    def setUserName(self,userName):
+        self.userName=userName
     
-    def getFileName(self):
-        return self.fileName
+    def getUserName(self):
+        return self.userName
     
-    def setFileSize(self,fileSize):
-        self.fileSize = fileSize
+    def setPw(self,pw):
+        self.pw=pw
     
-    def getFileSize(self):
-        return self.fileSize
-    
-    def setContent(self,content):
-        self.content = content
-    
-    def getContent(self):
-        return self.content
-    
-    def setFileType(self,fileType):
-        self.fileType = fileType
-    
-    def getFileType(self):
-        return self.fileType
+    def getPw(self):
+        return self.pw
     
     def setPermission(self,permission):
-        self.permission = permission
-    
-    def getPermission(self):
+        self.permission=permission
+        
+    def getPemission(self):
         return self.permission
-
   
 class MyDir():
     def __init__(self):
         self.dirName = ""
         self.dirSize = 0
         self.fileList = []
+        self.permission = 7
     
     def setDirName(self,dirName):
         self.dirName = dirName
@@ -83,14 +70,13 @@ class FileSys():
     currentDir = root
     
     def __init__(self):
-        self.userName="root"
-        self.pw="123456"
+        self.user = User()
         self.root.dirName = "root"
         self.currentDir.fileList = self.currentDir.getFileList()
     
     # 登录
     def login(self,pw):
-        if pw == self.pw:
+        if pw == self.user.getPw():
             print("登录成功！")
             return 1
         else:
@@ -98,91 +84,109 @@ class FileSys():
     
     # 创建文件
     def createFile(self,kw):
-        fileName = kw.split(" ")[1]
-        try:
-            fileType = kw.split(".")[1]
-        except:
-            fileType = "txt"        #默认为文本文件
-        if "/" in fileName:
-            print("文件名不能包含/字符！")
+        if self.user.getPemission() <= 4:
+            print("权限不足！")
         else:
-            file = MyFile()
-            file.setFileName(fileName)
-            file.setFileType(fileType)
-            self.currentDir.fileList.append(fileName)
-            open(kw.split(" ")[1],"w")
+            fileName = kw.split(" ")[1]
+            try:
+                fileType = kw.split(".")[1]
+            except:
+                fileType = "txt"        #默认为文本文件
+            if "/" in fileName:
+                print("文件名不能包含/字符！")
+            else:
+                self.currentDir.fileList.append(fileName)
+                open(kw.split(" ")[1],"w")
     
     # 删除文件    
     def delFile(self,kw):
-        fileName = kw.split(" ")[1]
-        if fileName in self.currentDir.fileList:
-            self.currentDir.fileList.remove(fileName)
-            os.remove(kw.split(" ")[1])
+        if self.user.getPemission() <= 4:
+            print("权限不足！")
         else:
-            print("文件不存在！")
+            fileName = kw.split(" ")[1]
+            if fileName in self.currentDir.fileList:
+                self.currentDir.fileList.remove(fileName)
+                os.remove(kw.split(" ")[1])
+            else:
+                print("文件不存在！")
     
     # 文件改名
     def renameFile(self,kw):
-        fileName = kw.split(" ")[1]
-        newFileName = kw.split(" ")[2]
-        if fileName in self.currentDir.fileList:
-            self.currentDir.fileList.remove(fileName)
-            self.currentDir.fileList.append(newFileName)
-            os.rename(fileName,newFileName)
+        if self.user.getPemission() <= 4 and self.user.getPemission() != 2:
+            print("权限不足！")
         else:
-            print("文件不存在！")
+            fileName = kw.split(" ")[1]
+            newFileName = kw.split(" ")[2]
+            if fileName in self.currentDir.fileList:
+                self.currentDir.fileList.remove(fileName)
+                self.currentDir.fileList.append(newFileName)
+                os.rename(fileName,newFileName)
+            else:
+                print("文件不存在！")
     
     # 复制文件
     def copyFile(self,kw):
-        fileName = kw.split(" ")[1]
-        newFileName = kw.split(" ")[2]
-        if fileName in self.currentDir.fileList:
-            self.currentDir.fileList.append(newFileName)
-            f1 = open(fileName,"r",encoding="utf-8")
-            f2 = open(newFileName,"w",encoding="utf-8")
-            f2.write(f1.read())
-            f1.close()
-            f2.close()
+        if self.user.getPemission() <= 0:
+            print("权限不足！")
         else:
-            print("文件不存在！")
-    
+            fileName = kw.split(" ")[1]
+            newFileName = kw.split(" ")[2]
+            if fileName in self.currentDir.fileList:
+                self.currentDir.fileList.append(newFileName)
+                f1 = open(fileName,"r",encoding="utf-8")
+                f2 = open(newFileName,"w",encoding="utf-8")
+                f2.write(f1.read())
+                f1.close()
+                f2.close()
+            else:
+                print("文件不存在！")
+        
     # 读取文件
     def readFile(self,kw):
-        fileName = kw.split(" ")[1]
-        print("文件名："+fileName+" 文件大小："+str(os.path.getsize("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.dirName.replace('/','\\')+"\\"+fileName))+" 字节")
-        os.system("pause")
-        os.system("cls")
-        if fileName in self.currentDir.fileList:
-            f = open(kw.split(" ")[1],"r",encoding="utf-8")
-            print(f.read())
-            f.close()
+        if self.user.getPemission() <= 0:
+            print("权限不足！")
         else:
-            print("文件不存在！")
+            fileName = kw.split(" ")[1]
+            print("文件名："+fileName+" 文件大小："+str(os.path.getsize("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.dirName.replace('/','\\')+"\\"+fileName))+" 字节")
+            os.system("pause")
+            os.system("cls")
+            if fileName in self.currentDir.fileList:
+                f = open(kw.split(" ")[1],"r",encoding="utf-8")
+                print(f.read())
+                f.close()
+            else:
+                print("文件不存在！")
     
     # 编辑文件 -- 默认队尾追加
     def editFile(self,kw):
-        fileName = kw.split(" ")[1]
-        if fileName in self.currentDir.fileList:
-            os.system("cls")
-            f = open(kw.split(" ")[1],"a+",encoding="utf-8")
-            f1 = open(kw.split(" ")[1],"r",encoding="utf-8")
-            print(f1.read())
-            string=""
-            while True:
-                temp = input()
-                if temp == ":wq":
-                    break
-                else:
-                    string = string + temp + "\n"
-            f.write(string)
-            f.close()       
+        if self.user.getPemission() <= 4:
+            print("权限不足！")
+        else:
+            fileName = kw.split(" ")[1]
+            if fileName in self.currentDir.fileList:
+                os.system("cls")
+                f = open(kw.split(" ")[1],"a+",encoding="utf-8")
+                f1 = open(kw.split(" ")[1],"r",encoding="utf-8")
+                print(f1.read())
+                string=""
+                while True:
+                    temp = input()
+                    if temp == ":wq":
+                        break
+                    else:
+                        string = string + temp + "\n"
+                f.write(string)
+                f.close()       
     
     # 重定向
     def redirect(self,kw):
-        content = kw.split(" ")[1].strip("\"")
-        fileName = kw.split("> ")[1]
-        f = open(fileName,"w",encoding="utf-8")
-        f.write(content)
+        if self.user.getPemission() <= 4:
+            print("权限不足！")
+        else:
+            content = kw.split(" ")[1].strip("\"")
+            fileName = kw.split("> ")[1]
+            f = open(fileName,"w",encoding="utf-8")
+            f.write(content)
 
     # 创建文件夹
     def createDir(self,kw):
@@ -269,14 +273,19 @@ class FileSys():
     def findFile(self,kw):
         fileName = kw.split(" ")[1]
         rootDir = 'F:\\Desktop_From_C\\OSCourseDesign\\'+self.currentDir.dirName.replace('/','\\')
+        existed=False
         for parent,dirnames,filenames in os.walk(rootDir):
             for f in filenames:
                 if f == fileName:
                     print(parent.replace("F:\\Desktop_From_C\\OSCourseDesign\\","")+"\\"+f)
+                    existed=True
             for d in dirnames:
                 if d == fileName:
-                    print(parent.replace("F:\\Desktop_From_C\\OSCourseDesign\\","")+"\\"+d)        
-    
+                    print(parent.replace("F:\\Desktop_From_C\\OSCourseDesign\\","")+"\\"+d)
+                    existed=True
+        if existed == False:
+            print("文件不存在！")
+                  
     # 清除
     def clear(self):
         os.system("cls")
@@ -386,7 +395,7 @@ class FileSys():
     def run(self):
         
         # getpass可隐藏输入的密码
-        pw=getpass.getpass("请输入"+self.userName+"的密码：")
+        pw=getpass.getpass("请输入"+self.user.getUserName()+"的密码：")
         
         # 输入密码的过程中，如果输入q则表示退出
         while pw != "q":
@@ -395,7 +404,7 @@ class FileSys():
             else:
                 pw=getpass.getpass("密码错误，请重新输入：")
         if pw == "q":
-            self.Exit()
+            return
         
         # 登录成功后，进入系统
         os.system("pause")        
