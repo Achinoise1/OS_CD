@@ -6,10 +6,8 @@ class MyFile():
     def __init__(self):
         self.fileName = ""
         self.fileSize = 0
-        # self.nextFile = MyFile()
         self.content = ""
         self.fileType = ""
-        self.permission = 7
     
     def setFileName(self,fileName):
         self.fileName = fileName
@@ -49,6 +47,7 @@ class MyDir():
         # self.lastDir = MyDir()
         # self.nextDir = MyDir()
         self.fileList = []
+        self.fileListReal = []
     
     def setDirName(self,dirName):
         self.dirName = dirName
