@@ -44,10 +44,7 @@ class MyDir():
     def __init__(self):
         self.dirName = ""
         self.dirSize = 0
-        # self.lastDir = MyDir()
-        # self.nextDir = MyDir()
         self.fileList = []
-        self.fileListReal = []
     
     def setDirName(self,dirName):
         self.dirName = dirName
@@ -59,6 +56,7 @@ class MyDir():
         self.dirSize = dirSize
         
     def getDirSize(self):
+        self.dirSize = os.path.getsize("F:\\Desktop_From_C\\OSCourseDesign\\"+self.dirName.replace('/','\\'))
         return self.dirSize
     
     def setFileList(self,fileList):
@@ -228,7 +226,18 @@ class FileSys():
             for d in dirnames:
                 print("     "*count+"+"+d)
             count+=1
-            
+       
+    # 查找文件
+    def findFile(self,kw):
+        fileName = kw.split(" ")[1]
+        rootDir = 'F:\\Desktop_From_C\\OSCourseDesign\\'+self.currentDir.dirName.replace('/','\\')
+        for parent,dirnames,filenames in os.walk(rootDir):
+            for f in filenames:
+                if f == fileName:
+                    print(parent.replace("F:\\Desktop_From_C\\OSCourseDesign\\","")+"\\"+f)
+            for d in dirnames:
+                if d == fileName:
+                    print(parent.replace("F:\\Desktop_From_C\\OSCourseDesign\\","")+"\\"+d)        
     # 清除
     def clear(self):
         os.system("cls")
@@ -248,6 +257,7 @@ class FileSys():
         print("     罗列文件           |          ls")
         print("     进入文件夹         |          cd")
         print("     返回上一级         |          cd ..")
+        print("     树形目录           |          tree")
         print("     清屏               |          clear")
         print("     退出               |          exit")
         print("================================================")
@@ -292,6 +302,9 @@ class FileSys():
             # 文件系统的树状图
             elif kw == "tree":
                 self.treeDir()
+            # 查找文件
+            elif "find" in kw:
+                self.findFile(kw)
             # 清屏
             elif kw == "clear":
                 self.clear()
