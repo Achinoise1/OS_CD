@@ -186,9 +186,15 @@ class FileSys():
         else:
             for f in self.currentDir.fileList:
                 if f == self.currentDir.fileList[-1]:
-                    print(f)
+                    if "." in f and f[0] != ".":
+                        print(f)
+                    else:
+                        print("\033[1;34;40m"+f+"\033[0m")
                 else:
-                    print(f,end=" ")
+                    if "." in f and f[0] != ".":
+                        print(f,end=" ")
+                    else:
+                        print("\033[1;34;40m"+f+"\033[0m",end=" ")
     
     # 进入文件夹
     def intoDir(self,kw):
@@ -258,6 +264,7 @@ class FileSys():
         print("     进入文件夹         |          cd")
         print("     返回上一级         |          cd ..")
         print("     树形目录           |          tree")
+        print("     查找文件           |          find")
         print("     清屏               |          clear")
         print("     退出               |          exit")
         print("================================================")
@@ -265,7 +272,7 @@ class FileSys():
     # 选择功能
     def choose(self):
         while True:
-            kw = input(self.currentDir.dirName+">")
+            kw = input("\033[1;32;40m"+self.currentDir.dirName+"\033[0m"+">")
             # 创建文件
             if "touch" in kw:
                 self.createFile(kw)
