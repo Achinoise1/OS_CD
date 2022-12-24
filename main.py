@@ -132,6 +132,20 @@ class FileSys():
         else:
             print("文件不存在！")
     
+    # 复制文件
+    def copyFile(self,kw):
+        fileName = kw.split(" ")[1]
+        newFileName = kw.split(" ")[2]
+        if fileName in self.currentDir.fileList:
+            self.currentDir.fileList.append(newFileName)
+            f1 = open(fileName,"r",encoding="utf-8")
+            f2 = open(newFileName,"w",encoding="utf-8")
+            f2.write(f1.read())
+            f1.close()
+            f2.close()
+        else:
+            print("文件不存在！")
+    
     # 读取文件
     def readFile(self,kw):
         fileName = kw.split(" ")[1]
@@ -163,6 +177,13 @@ class FileSys():
             f.write(string)
             f.close()       
     
+    # 重定向
+    def redirect(self,kw):
+        content = kw.split(" ")[1].strip("\"")
+        fileName = kw.split("> ")[1]
+        f = open(fileName,"w",encoding="utf-8")
+        f.write(content)
+
     # 创建文件夹
     def createDir(self,kw):
         try:
@@ -255,6 +276,7 @@ class FileSys():
             for d in dirnames:
                 if d == fileName:
                     print(parent.replace("F:\\Desktop_From_C\\OSCourseDesign\\","")+"\\"+d)        
+    
     # 清除
     def clear(self):
         os.system("cls")
@@ -267,8 +289,11 @@ class FileSys():
         print("================================================")
         print("     创建文件           |          touch")
         print("     删除文件           |          rm")
+        print("     文件改名           |          mv")
+        print("     复制文件           |          cp")
         print("     读取文件           |          cat")
         print("     编辑文件           |          vi")
+        print("     重定向             |          echo")
         print("     创建文件夹         |          mkdir")
         print("     删除文件夹         |          rmdir")
         print("     罗列文件           |          ls")
@@ -300,6 +325,10 @@ class FileSys():
             # 文件改名
             elif "mv" in kw:
                 self.renameFile(kw)
+                
+            # 复制文件
+            elif "cp" in kw:
+                self.copyFile(kw)
         
             # 读取文件
             elif "cat" in kw:
@@ -308,6 +337,10 @@ class FileSys():
             # 编辑文件
             elif "vi" in kw:
                 self.editFile(kw)
+            
+            # 重定向
+            elif "echo" in kw:
+                self.redirect(kw)
                 
             # 创建文件夹
             elif "mkdir" in kw:
@@ -342,7 +375,7 @@ class FileSys():
                 break
             
             # 帮助
-            elif kw == "help":
+            elif kw == "help" or "?":
                 self.menu()
                 
             # 未识别的指令
