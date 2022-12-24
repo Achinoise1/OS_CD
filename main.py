@@ -121,6 +121,17 @@ class FileSys():
         else:
             print("文件不存在！")
     
+    # 文件改名
+    def renameFile(self,kw):
+        fileName = kw.split(" ")[1]
+        newFileName = kw.split(" ")[2]
+        if fileName in self.currentDir.fileList:
+            self.currentDir.fileList.remove(fileName)
+            self.currentDir.fileList.append(newFileName)
+            os.rename(fileName,newFileName)
+        else:
+            print("文件不存在！")
+    
     # 读取文件
     def readFile(self,kw):
         fileName = kw.split(" ")[1]
@@ -273,35 +284,43 @@ class FileSys():
     def choose(self):
         while True:
             kw = input("\033[1;32;40m"+self.currentDir.dirName+"\033[0m"+">")
+            
             # 创建文件
             if "touch" in kw:
                 self.createFile(kw)
-                
-            # rmdir 必须在 rm 之前，否则会先执行rm
-            # 删除文件夹
+           
+            # 删除文件夹， rmdir 必须在 rm 之前，否则会先执行rm
             elif "rmdir" in kw:
                 self.delDir(kw)
+                
             # 删除文件
             elif "rm" in kw:
                 self.delFile(kw)
             
+            # 文件改名
+            elif "mv" in kw:
+                self.renameFile(kw)
+        
             # 读取文件
             elif "cat" in kw:
                 self.readFile(kw)
+                
             # 编辑文件
             elif "vi" in kw:
                 self.editFile(kw)
+                
             # 创建文件夹
             elif "mkdir" in kw:
                 self.createDir(kw)
+                
             # 罗列文件
             elif kw == "ls":
                 self.listFile()
                 
-            # 同理，cd .. 必须在 cd 之前
-            # 返回上一级
+            # 返回上一级，同理，cd .. 必须在 cd 之前
             elif kw == "cd ..":
                 self.backDir()
+                
             # 进入文件夹
             elif "cd " in kw:
                 self.intoDir(kw.split(" ")[1])
@@ -309,18 +328,23 @@ class FileSys():
             # 文件系统的树状图
             elif kw == "tree":
                 self.treeDir()
+                
             # 查找文件
             elif "find" in kw:
                 self.findFile(kw)
+                
             # 清屏
             elif kw == "clear":
                 self.clear()
+                
             # 退出
             elif kw == "exit":
                 break
+            
             # 帮助
             elif kw == "help":
                 self.menu()
+                
             # 未识别的指令
             else:
                 print("未识别的指令: "+kw+"请重新输入！")
