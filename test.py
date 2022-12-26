@@ -180,14 +180,18 @@ class FileSys():
     
     # 复制文件    
     def copyFile(self,kw:str):
-        if self.matchPermission(self.currentDir.getPermission(),"7" or "2" or "3") and self.matchPermission(kw.getPermission(),"3"):
+        if self.matchPermission(self.currentDir.getPermission(),"7" or "2" or "3"):
             flag=False
             name = kw.split(" ")[1]
             newName = kw.split(" ")[2]
             for f in self.currentDir.fileList:
-                if name == f.getName():
+                if name == f:
                     self.currentDir.fileList.append(newName)
-                    os.system("copy F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getDirName().replace('/','\\')+"\\"+name+" F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getDirName().replace('/','\\')+"\\"+newName)
+                    f1 = open("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name,"r",encoding="utf-8")
+                    f2 = open("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+newName,"w",encoding="utf-8")
+                    f2.write(f1.read()) 
+                    f2.close()  
+                    f1.close()
                     flag=True
                     break
             if flag==False:
@@ -198,30 +202,45 @@ class FileSys():
     # 读取文件
     def readFile(self,kw:str):
         flag=False
-        if self.matchPermission(f.getPermission(),"7") or self.matchPermission(f.getPermission(),"4"):
-            name = kw.split(" ")[1]
-            for f in self.currentDir.fileList:
-                if name == f.getName():
-                    f = open("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getDirName().replace('/','\\')+"\\"+name,"r")
+        name = kw.split(" ")[1]
+        path="F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name
+        for f in self.currentDir.fileList:
+            if name == f:
+                if os.access(path,os.R_OK):
+                    print("文件名："+name+" 文件大小："+str(os.path.getsize("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name))+" 字节")
+                    os.system("pause")
+                    os.system("cls")
+                    f = open("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name,"r")
                     print(f.read())
                     f.close()
                     flag=True
                     break
-            if flag==False:
-                print("No such file!")
-        else:
-            print("Permission denied!")    
+                else:
+                    print("Permission denied!")    
+        if flag==False:
+            print("No such file!")
 
     # 编辑文件
     def editFile(self,kw:str):
+        name = kw.split(" ")[1]
         flag=False
-        if self.matchPermission(f.getPermission(),"7") or self.matchPermission(f.getPermission(),"3"):
-            name = kw.split(" ")[1]
+        if os.access("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name,os.W_OK):
             for f in self.currentDir.fileList:
-                if name == f.getName():
-                    f = open("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getDirName().replace('/','\\')+"\\"+name,"w")
-                    print("Please input the content:")
-                    content = input()
+                if name == f:
+                    os.system("cls")
+                    f = open("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name,"a+")
+                    f1 = open("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name,"r")
+                    print(f1.read())
+                    content=""
+                    while True:
+                        temp=input()
+                        if temp == ":wq":
+                            break
+                        elif temp == ":q":
+                            content=""
+                            break
+                        else:
+                            content += temp+"\n"
                     f.write(content)
                     f.close()
                     flag=True
