@@ -1,11 +1,17 @@
 import getpass
 import os
 import keyboard
-
+class File():
+    def __init__(self):
+        self.name=""
+        self.size=0
+        self.permission=7
 class User():
     def __init__(self):
-        self.userName="root"
-        self.pw="123456"
+        f=open("F:\\Desktop_From_C\\OSCourseDesign\\root\\user.txt","r")
+        string=f.readline()
+        self.userName=string.split(" ")[0]
+        self.pw=string.split(" ")[1]
         self.permission=7
     
     def setUserName(self,userName):
@@ -31,7 +37,6 @@ class MyDir():
         self.dirName = ""
         self.dirSize = 0
         self.fileList = []
-        self.permission = 7
     
     def setDirName(self,dirName):
         self.dirName = dirName
@@ -52,18 +57,6 @@ class MyDir():
     def getFileList(self):
         self.fileList = os.listdir("F:\\Desktop_From_C\\OSCourseDesign\\"+self.dirName.replace('/','\\'))
         return self.fileList
-    
-    def setLastDir(self,lastDir):
-        self.lastDir = lastDir
-    
-    def getLastDir(self):
-        return self.lastDir
-    
-    def setNextDir(self,nextDir):
-        self.nextDir = nextDir
-        
-    def getNextDir(self):
-        return self.nextDir
 
 class FileSys():
     root= MyDir()
@@ -110,7 +103,7 @@ class FileSys():
             else:
                 print("文件不存在！")
     
-    # 文件改名
+    # 文件改名*
     def renameFile(self,kw):
         if self.user.getPemission() <= 4 and self.user.getPemission() != 2:
             print("权限不足！")
@@ -118,13 +111,16 @@ class FileSys():
             fileName = kw.split(" ")[1]
             newFileName = kw.split(" ")[2]
             if fileName in self.currentDir.fileList:
-                self.currentDir.fileList.remove(fileName)
-                self.currentDir.fileList.append(newFileName)
-                os.rename(fileName,newFileName)
+                if "/" in newFileName:
+                    print("文件名不能包含/字符！")
+                else:
+                    self.currentDir.fileList.remove(fileName)
+                    self.currentDir.fileList.append(newFileName)
+                    os.rename(fileName,newFileName)
             else:
                 print("文件不存在！")
     
-    # 复制文件
+    # 复制文件*
     def copyFile(self,kw):
         if self.user.getPemission() <= 0:
             print("权限不足！")
