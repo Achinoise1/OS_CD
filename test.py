@@ -346,7 +346,7 @@ class FileSys():
             else:
                 for f in self.currentDir.fileList:
                     if f == self.currentDir.fileList[-1]:
-                        if "." in f:
+                        if "." in f and f[0] !=".":
                             print(f)
                         else:
                             print("\033[1;34;40m"+f+"\033[0m")
@@ -483,7 +483,7 @@ class FileSys():
             # 创建文件
             if "touch" in kw:
                 self.createFile(kw)
-           
+            
             # 删除文件夹， rmdir 必须在 rm 之前，否则会先执行rm
             elif "rmdir" in kw:
                 self.delDir(kw)
@@ -546,7 +546,7 @@ class FileSys():
                 
             # 未识别的指令
             else:
-                print("未识别的指令: "+kw+"请重新输入！")
+                print("未识别的指令: "+kw+" 请重新输入！")
 
     # 运行    
     def run(self):
