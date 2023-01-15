@@ -85,7 +85,6 @@ class MyDir():
         
     def delDir(self,file):
         for f in file.getFileList():
-            print(type(f))
             if isinstance(f,MyDir):
                 self.delDir(f)
             else:
@@ -178,6 +177,31 @@ class FileSys():
         else:
             return False
     
+    def findDir(self,dirName:str):
+        if dirName == self.currentDir.getName():
+            return self.currentDir
+        else:
+            for f in self.currentDir.getFileList():
+                if isinstance(f,MyDir):
+                    if f.getName() == dirName:
+                        return f
+                    else:
+                        self.findDir(f,dirName)
+                else:
+                    return None
+    
+    def displayDir(self,file,count):
+        if isinstance(file,MyDir):
+            for f in file.getFileList():
+                if isinstance(f,MyDir) and self.matchPermission(f.getPermission(),"7" or "5" or "3" or "1"):
+                    print("     "*count+"\033[1;34;40m"+"+"+f.getName()+"\033[0m")
+                    self.displayDir(f,count+1)
+                else:
+                    print("     "*count+"|"+f.getName())
+                    
+        else:
+            print("     "*count+"|"+file.getName())
+    
     # 创建文件
     def createFile(self,kw:str):
         try:
@@ -193,14 +217,14 @@ class FileSys():
                         print("File already exists!")
                         flag=True
                         break
-                if flag:
+                if flag == False:
                     permission = "76"
                     f = File()
                     f.setName(name)
                     f.setOwner(self.user.getName())
                     f.setPermission(permission)
                     self.currentDir.addfile(f)
-                    open(f.getName(),"w")
+                    # open(f.getName(),"w")
                     # self.currentDir.setFileList(os.listdir("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')))
             else:
                 print("Invalid file name!")
@@ -499,39 +523,20 @@ class FileSys():
         if self.matchPermission(self.currentDir.getPermission(),"7" or "5"):
             if name == "":
                 # rootDir = 'F:\\Desktop_From_C\\OSCourseDesign\\'+self.currentDir.getName().replace('/','\\')
-                rootDir = self.currentDir.getName()
+                rootDir = self.currentDir
             else:
-                Dir = self.currentDir.getName()
-                # Dir = 'F:\\Desktop_From_C\\OSCourseDesign\\'+self.currentDir.getName().replace('/','\\')
-                existed=False
-                for n in self.currentDir.getFileList():
-                    for d in dirnames:
-                        if d == name:
-                            rootDir = parent+"\\"+d
-                            existed=True
-                            break
-                # for parent,dirnames,filenames in os.walk(Dir):
-                #     for d in dirnames:
-                #         if d == name:
-                #             rootDir = parent+"\\"+d
-                #             existed=True
-                #             break
-                if existed==False:
+                rootDir = self.findDir(name)
+                if rootDir == None:
                     print("No such file!")
                     return
+                # else:
+                #     rootDir = rootDir.getWholeName().replace('/','\\')
             count=1
-            if self.currentDir.getName()=="root":
-                print("root")
-            else:
-                print("\033[1;34;40m"+"+"+self.currentDir.getName()[self.currentDir.getName().rfind("/")+1:]+"\033[0m")
-            for parent,dirnames,filenames in os.walk(rootDir):
-                for f in filenames:
-                    if os.access(parent+"\\"+f,os.R_OK):
-                        print("     "*count+"|"+f)
-                for d in dirnames:
-                    if os.access(parent+"\\"+d,os.R_OK):
-                        print("     "*count+"\033[1;34;40m"+"+"+d+"\033[0m")
-                count+=1
+            # if self.currentDir.getName()=="root":
+            print("\033[1;34;40m"+"+"+rootDir.getName()+"\033[0m")
+            # else:
+            #     print("\033[1;34;40m"+"+"+self.currentDir.getName()[self.currentDir.getName().rfind("/")+1:]+"\033[0m")
+            self.displayDir(rootDir,count)
         else:
             print("Permission denied!")
     
