@@ -80,11 +80,18 @@ class MyDir():
         self.fileList.append(file)
         
     def delfile(self,file):
-        file.__del__()
         self.fileList.remove(file)
+        file.__del__()
+        
+    def delDir(self,file):
+        for f in file.getFileList():
+            print(type(f))
+            if isinstance(f,MyDir):
+                self.delDir(f)
+            else:
+                self.delfile(f)
         
     def getFileList(self):
-        # self.fileList = os.listdir("F:\\Desktop_From_C\\OSCourseDesign\\"+self.Name.replace('/','\\'))
         return self.fileList
     
     def setPermission(self,permission):
@@ -417,6 +424,7 @@ class FileSys():
         if self.matchPermission(self.currentDir.getPermission(),"7"):
             for f in self.currentDir.getFileList():
                 if name == f.getName():
+                    self.currentDir.delDir(f)
                     self.currentDir.delfile(f)
                     # os.rmdir("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name)
                     flag=True
@@ -496,12 +504,7 @@ class FileSys():
                 Dir = self.currentDir.getName()
                 # Dir = 'F:\\Desktop_From_C\\OSCourseDesign\\'+self.currentDir.getName().replace('/','\\')
                 existed=False
-                # for n in self.currentDir.getFileList():
-                #     if n.getName()==name:
-                #         rootDir = n.getName()
-                #         existed=True
-                #         break
-                for parent,dirnames,filenames in os.walk(Dir):
+                for n in self.currentDir.getFileList():
                     for d in dirnames:
                         if d == name:
                             rootDir = parent+"\\"+d
