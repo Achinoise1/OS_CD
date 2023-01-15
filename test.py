@@ -1,6 +1,7 @@
 import getpass
 import os
 import keyboard
+import copy
 
 class File():
     def __init__(self):
@@ -38,7 +39,10 @@ class File():
         self.use=use    
     
     def getUse(self):
-        return self.use
+        return self.use       
+    
+    def __del__(self):
+        del self
 
 class MyDir():
     def __init__(self):
@@ -63,6 +67,13 @@ class MyDir():
     
     def setFileList(self,fileList):
         self.fileList = fileList
+        
+    def addfile(self,file):
+        self.fileList.append(file)
+        
+    def delfile(self,file):
+        file.__del__()
+        self.fileList.remove(file)
         
     def getFileList(self):
         # self.fileList = os.listdir("F:\\Desktop_From_C\\OSCourseDesign\\"+self.Name.replace('/','\\'))
@@ -115,7 +126,7 @@ class FileSys():
         self.user.setType("root")
         
         self.currentDir.setName(self.user.getName())
-        self.currentDir.setFileList(os.listdir("F:\\Desktop_From_C\\OSCourseDesign\\root"))
+        # self.currentDir.setFileList(os.listdir("F:\\Desktop_From_C\\OSCourseDesign\\root"))
         self.currentDir.setPermission("77")
         
     def login(self,pw):
@@ -150,9 +161,9 @@ class FileSys():
                     f.setName(name)
                     f.setOwner(self.user.getName())
                     f.setPermission(permission)
-                    self.currentDir.fileList.append(f)
+                    self.currentDir.addfile(f)
                     open(f.getName(),"w")
-                    self.currentDir.setFileList(os.listdir("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')))
+                    # self.currentDir.setFileList(os.listdir("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')))
                 else:
                     print("File already exists!")
             else:
@@ -170,9 +181,9 @@ class FileSys():
         flag=False
         if self.matchPermission(self.currentDir.getPermission(),"7"):
             for f in self.currentDir.getFileList():
-                if name == f:
-                    self.currentDir.fileList.remove(f)
-                    os.remove("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name)
+                if name == f.getName():
+                    self.currentDir.delfile(f)
+                    # os.remove("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name)
                     flag=True
                     break
             if flag==False:
@@ -189,17 +200,25 @@ class FileSys():
             print("Incomplete command!")
             return
         flag=False
+        
         for f in self.currentDir.getFileList():
-            if name == f:
+            if newName == f.getName():
+                print("File already exists!")
+                flag=True
+                return
+        
+        for f in self.currentDir.getFileList():
+            if name == f.getName():
                 if "/" not in newName:
                     if newName in self.currentDir.getFileList():
                         print("File already exists!")
                         flag=True
                         break
                     else:
-                        self.currentDir.fileList.remove(name)
-                        self.currentDir.fileList.append(newName)
-                        os.rename("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name,"F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+newName)
+                        f.setName(newName)
+                        # self.currentDir.fileList.remove(name)
+                        # self.currentDir.fileList.append(newName)
+                        # os.rename("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name,"F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+newName)
                         flag=True
                         break
                 else:
@@ -218,20 +237,32 @@ class FileSys():
             return
         if self.matchPermission(self.currentDir.getPermission(),"7" or "2" or "3"):
             flag=False
+            
             for f in self.currentDir.fileList:
-                if name == f:
+                if newName == f.getName():
+                    print("File already exists!")
+                    flag=True
+                    return
+            
+            for f in self.currentDir.fileList:
+                if name == f.getName():
                     if "/" not in newName:
                         if newName in self.currentDir.fileList:
                             print("File already exists!")
                             flag=True
                             break
                         else:
-                            self.currentDir.fileList.append(newName)
-                            f1 = open("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name,"r",encoding="utf-8")
-                            f2 = open("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+newName,"w",encoding="utf-8")
-                            f2.write(f1.read()) 
-                            f2.close()  
-                            f1.close()
+                            # self.currentDir.fileList.append(newName)
+                            f1=File()
+                            f1=copy.deepcopy(f)
+                            f1.setName(newName)
+                            self.currentDir.addfile(f1)
+                            print(self.currentDir.fileList)
+                            # f1 = open("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name,"r",encoding="utf-8")
+                            # f2 = open("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+newName,"w",encoding="utf-8")
+                            # f2.write(f1.read()) 
+                            # f2.close()  
+                            # f1.close()
                             flag=True
                             break
                     else:
@@ -356,15 +387,15 @@ class FileSys():
             if self.currentDir.fileList==[]:
                 print()
             else:
-                for f in self.currentDir.fileList:
+                for f in self.currentDir.getFileList():
                     if f == self.currentDir.fileList[-1]:
-                        if "." in f and f[0] !=".":
-                            print(f)
+                        if "." in f.getName() and f.getName()[0] !=".":
+                            print(f.getName())
                         else:
                             print("\033[1;34;40m"+f+"\033[0m")
                     else:
-                        if "." in f and f[0]!=".":
-                            print(f,end=" ")
+                        if "." in f.getName() and f.getName()[0]!=".":
+                            print(f.getName(),end=" ")
                         else:
                             print("\033[1;34;40m"+f+"\033[0m",end=" ")
         else:
