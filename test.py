@@ -70,8 +70,7 @@ class MyDir():
         self.Size = Size
         
     def getSize(self):
-        self.dirSize = os.path.getsize("F:\\Desktop_From_C\\OSCourseDesign\\"+self.Name.replace('/','\\'))
-        return self.dirSize
+        return self.Size
     
     def setFileList(self,fileList):
         self.fileList = fileList
@@ -156,8 +155,6 @@ class FileSys():
         
         self.currentDir.setWholeName(self.user.getName())
         self.currentDir.setName(self.user.getName())
-        # print(self.currentDir.getName())
-        # self.currentDir.setFileList(os.listdir("F:\\Desktop_From_C\\OSCourseDesign\\root"))
         self.currentDir.setPermission("77")
         
     def login(self,pw):
@@ -187,8 +184,7 @@ class FileSys():
                         return f
                     else:
                         self.findDir(f,dirName)
-                else:
-                    return None
+            return None
     
     def displayDir(self,file,count):
         if isinstance(file,MyDir):
@@ -224,8 +220,6 @@ class FileSys():
                     f.setOwner(self.user.getName())
                     f.setPermission(permission)
                     self.currentDir.addfile(f)
-                    # open(f.getName(),"w")
-                    # self.currentDir.setFileList(os.listdir("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')))
             else:
                 print("Invalid file name!")
         else:
@@ -243,7 +237,6 @@ class FileSys():
             for f in self.currentDir.getFileList():
                 if name == f.getName():
                     self.currentDir.delfile(f)
-                    # os.remove("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name)
                     flag=True
                     break
             if flag==False:
@@ -276,9 +269,6 @@ class FileSys():
                         break
                     else:
                         f.setName(newName)
-                        # self.currentDir.fileList.remove(name)
-                        # self.currentDir.fileList.append(newName)
-                        # os.rename("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name,"F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+newName)
                         flag=True
                         break
                 else:
@@ -312,17 +302,11 @@ class FileSys():
                             flag=True
                             break
                         else:
-                            # self.currentDir.fileList.append(newName)
                             f1=File()
                             f1=copy.deepcopy(f)
                             f1.setName(newName)
                             self.currentDir.addfile(f1)
                             print(self.currentDir.fileList)
-                            # f1 = open("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name,"r",encoding="utf-8")
-                            # f2 = open("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+newName,"w",encoding="utf-8")
-                            # f2.write(f1.read()) 
-                            # f2.close()  
-                            # f1.close()
                             flag=True
                             break
                     else:
@@ -341,7 +325,6 @@ class FileSys():
         except:
             print("Incomplete command!")
             return
-        # path="F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name
         for f in self.currentDir.fileList:
             if name == f.getName():
                 if self.matchPermission(f.getPermission(),"7" or "4" or "5" or "6"):
@@ -351,15 +334,6 @@ class FileSys():
                     print(f.getContent())
                     flag=True
                     break
-                # if os.access(path,os.R_OK):
-                #     print("文件名："+name+" 文件大小："+str(os.path.getsize("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name))+" 字节")
-                #     os.system("pause")
-                #     os.system("cls")
-                #     f = open("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name,"r")
-                #     print(f.read())
-                #     f.close()
-                #     flag=True
-                #     break
                 else:
                     print("Permission denied!")    
         if flag==False:
@@ -374,15 +348,11 @@ class FileSys():
             return
         flag=False
         if self.matchPermission(self.currentDir.getPermission(),"7" or "2" or "3" or "6"):
-        # if os.access("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name,os.W_OK):
             for f in self.currentDir.fileList:
                 if name == f.getName():
                     if f.getUse() == False:
                         f.setUse(True)
                         os.system("cls")
-                        # f = open("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name,"a+")
-                        # f1 = open("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name,"r")
-                        # print(f1.read())
                         content=""
                         while True:
                             temp=input()
@@ -394,7 +364,6 @@ class FileSys():
                             else:
                                 content += temp+"\n"
                         f.setContent(content)
-                        # f.close()
                         f.setSize(len(content.encode("utf-8")))
                         f.setUse(False)
                         flag=True
@@ -430,8 +399,6 @@ class FileSys():
                     dir.setParent(self.currentDir)
                     dir.setWholeName(self.currentDir.getWholeName()+"/"+name)
                     self.currentDir.addfile(dir)
-                    # os.mkdir("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name)
-                    # self.currentDir.setFileList(os.listdir("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')))
             else:
                 print("Invalid dir name!")
         else:
@@ -450,7 +417,6 @@ class FileSys():
                 if name == f.getName():
                     self.currentDir.delDir(f)
                     self.currentDir.delfile(f)
-                    # os.rmdir("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')+"\\"+name)
                     flag=True
                     break
             if flag==False:
@@ -492,8 +458,6 @@ class FileSys():
         if self.matchPermission(self.currentDir.getPermission(),"7" or "3" or "5" or "1"):
             for f in self.currentDir.fileList:
                 if name == f.getName() and self.matchPermission(f.getPermission()[0],"7" or "3" or "5" or "1"):
-                    # self.currentDir.setName(self.currentDir.getName()+"/"+f.getName())
-                    # self.currentDir.setFileList(os.listdir("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')))
                     self.currentDir = f
                     flag=True
                     break
@@ -509,8 +473,6 @@ class FileSys():
                 print("You are in the root dir!")
             else:
                 self.currentDir = self.currentDir.getParent()
-                # self.currentDir.setName(self.currentDir.getName()[0:self.currentDir.getName().rfind("/")])
-                # self.currentDir.setFileList(os.listdir("F:\\Desktop_From_C\\OSCourseDesign\\"+self.currentDir.getName().replace('/','\\')))
         else:
             print("Permission denied!") 
     
@@ -522,43 +484,42 @@ class FileSys():
             name = ""
         if self.matchPermission(self.currentDir.getPermission(),"7" or "5"):
             if name == "":
-                # rootDir = 'F:\\Desktop_From_C\\OSCourseDesign\\'+self.currentDir.getName().replace('/','\\')
                 rootDir = self.currentDir
             else:
                 rootDir = self.findDir(name)
                 if rootDir == None:
                     print("No such file!")
                     return
-                # else:
-                #     rootDir = rootDir.getWholeName().replace('/','\\')
             count=1
-            # if self.currentDir.getName()=="root":
             print("\033[1;34;40m"+"+"+rootDir.getName()+"\033[0m")
-            # else:
-            #     print("\033[1;34;40m"+"+"+self.currentDir.getName()[self.currentDir.getName().rfind("/")+1:]+"\033[0m")
             self.displayDir(rootDir,count)
         else:
             print("Permission denied!")
     
     # 查找文件
     def findFile(self,kw:str):
-        if self.matchPermission(self.currentDir.getPermission(),"7" or "5"):
-            name = kw.split(" ")[1]
-            rootDir = 'F:\\Desktop_From_C\\OSCourseDesign\\'+self.currentDir.getName().replace('/','\\')
-            existed=False
-            for parent,dirnames,filenames in os.walk(rootDir):
-                for f in filenames:
-                    if f == name:
-                        print(parent.replace("F:\\Desktop_From_C\\OSCourseDesign\\","")+"\\"+f)
-                        existed=True
-                for d in dirnames:
-                    if d == name:
-                        print(parent.replace("F:\\Desktop_From_C\\OSCourseDesign\\","")+"\\"+d)
-                        existed=True
-            if existed==False:
-                print("No such file!")
+        name = kw.split(" ")[1]
+        self.recurFind(self.currentDir,name)     
+    
+    # 递归查找文件
+    def recurFind(self,dir:MyDir,name):
+        if self.matchPermission(dir.getPermission(),"7" or "5"):
+            if dir.getFileList()==[]:
+                print("No such file!")  
+            else:        
+                for f in dir.getFileList():
+                    if isinstance(f,MyDir):
+                        if f.getName() == name:
+                            print(f.getWholeName().replace('/','\\')+"\\")
+                        else:    
+                            self.recurFind(f,name)
+                    else:
+                        if f.getName() == name:
+                            print(dir.getWholeName().replace('/','\\')+"\\"+f.getName())
+                        else:
+                            print("No such file!")  
         else:
-            print("Permission denied!")             
+            print("Permission denied!")
 
     # 清除
     def clear(self):
